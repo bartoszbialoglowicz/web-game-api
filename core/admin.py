@@ -25,3 +25,8 @@ class UserAdmin(BaseUserAdmin):
     )
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Stats)
+admin.site.register(models.Item)
+admin.site.register(models.Character)
+admin.site.register(models.Trait)
+admin.site.register(models.UserResources)

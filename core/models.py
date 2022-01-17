@@ -1,5 +1,7 @@
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth import get_user_model
 
 class UserManager(BaseUserManager):
 
@@ -34,3 +36,52 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+TIER_LIST = [
+    ("Common", 1),
+    ("Rare", 2),
+    ("Epic", 3),
+    ("Mythic", 4),
+    ("Legendary", 5),
+]
+
+
+class Stats(models.Model):
+    """Base stats for items and Characters"""
+    damage = models.IntegerField()
+    health = models.IntegerField()
+    armor = models.IntegerField()
+    resists = models.IntegerField()
+    critical_percent = models.IntegerField()
+    critical_damge = models.IntegerField()
+
+
+class Trait(models.Model):
+    """Trait which gives bonuses to charcter. Each character can have a multiple traits"""
+    name = models.CharField(max_length=128)
+    description = models.TextField()
+
+
+class Character(models.Model):
+    """Character model which player collects during the game"""
+    base_stats = models.ForeignKey(Stats, on_delete=models.CASCADE)
+    traits = models.ManyToManyField(Trait)
+    name = models.CharField(max_length=128)
+    profession = models.CharField(max_length=64)
+    power = models.IntegerField()
+    tier = models.IntegerField(choices=TIER_LIST)
+
+
+class Item(models.Model):
+    """Item model"""
+    name = models.CharField(max_length=128)
+    tier = models.IntegerField(choices=TIER_LIST)
+    base_stats = models.ForeignKey(Stats, on_delete=models.CASCADE)
+
+
+class UserResources(models.Model):
+    """Store for all items and characters collected by user"""
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    characters = models.ManyToManyField(Character)
+    items = models.ManyToManyField(Item)
