@@ -39,11 +39,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 TIER_LIST = [
-    ("Common", 1),
-    ("Rare", 2),
-    ("Epic", 3),
-    ("Mythic", 4),
-    ("Legendary", 5),
+    (1, "Common"),
+    (2, "Rare"),
+    (3, "Epic"),
+    (4, "Mythic"),
+    (5, "Legendary"),
 ]
 
 
@@ -56,21 +56,32 @@ class Stats(models.Model):
     critical_percent = models.IntegerField()
     critical_damge = models.IntegerField()
 
+    def __str__(self):
+        return str(self.damage) + ' ' + str(self.health) + ' ' + str(self.armor)
+
 
 class Trait(models.Model):
     """Trait which gives bonuses to charcter. Each character can have a multiple traits"""
     name = models.CharField(max_length=128)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
+
 
 class Character(models.Model):
     """Character model which player collects during the game"""
-    base_stats = models.ForeignKey(Stats, on_delete=models.CASCADE)
+    base_stats = models.OneToOneField(Stats, on_delete=models.CASCADE)
     traits = models.ManyToManyField(Trait)
     name = models.CharField(max_length=128)
-    profession = models.CharField(max_length=64)
     power = models.IntegerField()
     tier = models.IntegerField(choices=TIER_LIST)
+
+    class Meta:
+        ordering = ['-power']
+
+    def __str__(self):
+        return self.name + ' ' + str(self.power)
 
 
 class Item(models.Model):
@@ -84,4 +95,4 @@ class UserResources(models.Model):
     """Store for all items and characters collected by user"""
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
     characters = models.ManyToManyField(Character)
-    items = models.ManyToManyField(Item)
+    items = models.ManyToManyField(Item, blank=True)
