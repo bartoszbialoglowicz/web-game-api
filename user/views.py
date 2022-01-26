@@ -1,5 +1,7 @@
 from django.contrib import auth
 from rest_framework import generics, authentication, permissions
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
@@ -13,6 +15,21 @@ class CreateUserView(generics.CreateAPIView):
 class CreateTokenView(ObtainAuthToken):
     serializer_class = serializers.AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user': user.name,
+            'email': user.email,
+            'gold': user.gold,
+	    'experience': user.experience,
+	    'lvl': user.lvl
+        })
 
 
 class ManageUserView(generics.RetrieveUpdateAPIView):

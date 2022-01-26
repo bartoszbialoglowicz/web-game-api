@@ -52,6 +52,11 @@ class UserResourcesViewSet(BaseResourcesViewSet):
     queryset = UserResources.objects.all()
     serializer_class = serializers.UserResourceSerializer
 
+    def get_queryset(self):
+        print(self.request.user.userresources)
+        queryset = self.queryset.filter(user=self.request.user)
+        return queryset
+    
 
 class TraitViewSet(BaseResourcesViewSet):
     queryset = Trait.objects.all()

@@ -2,6 +2,7 @@ from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.contrib.auth import get_user_model
+from annoying.fields import AutoOneToOneField
 
 class UserManager(BaseUserManager):
 
@@ -28,10 +29,13 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that suppors using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_new = models.BooleanField(default=True)
+    gold = models.IntegerField(default=100)
+    experience = models.IntegerField(default=0)
+    lvl = models.IntegerField(default=1)
 
     objects = UserManager()
 
@@ -71,7 +75,7 @@ class Trait(models.Model):
 
 class Character(models.Model):
     """Character model which player collects during the game"""
-    base_stats = models.OneToOneField(Stats, on_delete=models.CASCADE)
+    base_stats = models.OneToOneField(Stats, on_delete=models.CASCADE, unique=False)
     traits = models.ManyToManyField(Trait)
     name = models.CharField(max_length=128)
     power = models.IntegerField()
@@ -88,11 +92,14 @@ class Item(models.Model):
     """Item model"""
     name = models.CharField(max_length=128)
     tier = models.IntegerField(choices=TIER_LIST)
-    base_stats = models.ForeignKey(Stats, on_delete=models.CASCADE)
+    base_stats = models.ForeignKey(Stats, on_delete=models.CASCADE, unique=False)
 
 
 class UserResources(models.Model):
     """Store for all items and characters collected by user"""
-    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    characters = models.ManyToManyField(Character)
+    user = AutoOneToOneField(get_user_model(), on_delete=models.CASCADE)
+    characters = models.ManyToManyField(Character, blank=True)
     items = models.ManyToManyField(Item, blank=True)
+
+    def __str__(self):
+	    return str(self.user)
