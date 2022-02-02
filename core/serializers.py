@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from core import models
 from user.serializers import UserSerializer
+from drf_writable_nested import WritableNestedModelSerializer
 
 
 class TraitSerializer(serializers.ModelSerializer):
@@ -27,7 +28,7 @@ class CharacterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Character
-        fields = ('id', 'name', 'power', 'tier', 'base_stats', 'traits')
+        fields = ('id', 'name', 'power', 'tier', 'base_stats', 'traits', 'image')
 
 
 class CharaterDetailSerializer(CharacterSerializer):
@@ -43,11 +44,50 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserResourceSerializer(serializers.ModelSerializer):
+class UserResourceSerializer(WritableNestedModelSerializer,
+                                serializers.ModelSerializer):
 
     characters = CharacterSerializer(many=True)
     items = ItemSerializer(many=True)
 
     class Meta:
         model = models.UserResources
-        fields = ('id', 'user', 'characters', 'items')
+        fields = ('id', 'user', 'characters', 'items', 'lvl', 'gold', 'experience')
+
+class UserResourceUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.UserResources
+        fields = ('user', 'characters', 'items', 'lvl', 'gold', 'experience')
+
+
+class StoreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Store
+        fields = '__all__'
+
+
+class ChestSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Chest
+        fields = '__all__'
+
+
+class ItemChestSerializer(serializers.ModelSerializer):
+    
+    items = ItemSerializer(many=True)
+
+    class Meta:
+        model = models.ItemChest
+        fields = '__all__'
+
+
+class CharacterChestSerializer(serializers.ModelSerializer):
+
+    characters = CharacterSerializer(many=True)
+
+    class Meta:
+        model = models.CharacterChest
+        fields = '__all__'

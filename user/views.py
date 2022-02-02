@@ -26,9 +26,7 @@ class CreateTokenView(ObtainAuthToken):
             'token': token.key,
             'user': user.name,
             'email': user.email,
-            'gold': user.gold,
-	    'experience': user.experience,
-	    'lvl': user.lvl
+            'id': user.id
         })
 
 

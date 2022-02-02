@@ -1,8 +1,18 @@
-from pyexpat import model
+from distutils.command.upload import upload
+import uuid
+import os
+
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.contrib.auth import get_user_model
 from annoying.fields import AutoOneToOneField
+
+
+def character_image_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{uuid.uuid4()}.{ext}'
+
+    return os.path.join('uploads/characters/', filename)
 
 class UserManager(BaseUserManager):
 
@@ -33,9 +43,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_new = models.BooleanField(default=True)
-    gold = models.IntegerField(default=100)
-    experience = models.IntegerField(default=0)
-    lvl = models.IntegerField(default=1)
 
     objects = UserManager()
 
@@ -80,6 +87,7 @@ class Character(models.Model):
     name = models.CharField(max_length=128)
     power = models.IntegerField()
     tier = models.IntegerField(choices=TIER_LIST)
+    image = models.ImageField(null=True, upload_to=character_image_file_path)
 
     class Meta:
         ordering = ['-power']
@@ -100,6 +108,36 @@ class UserResources(models.Model):
     user = AutoOneToOneField(get_user_model(), on_delete=models.CASCADE)
     characters = models.ManyToManyField(Character, blank=True)
     items = models.ManyToManyField(Item, blank=True)
+    gold = models.IntegerField(default=100)
+    experience = models.IntegerField(default=0)
+    lvl = models.IntegerField(default=1)
 
     def __str__(self):
 	    return str(self.user)
+
+
+class Store(models.Model):
+    """Model available chest in store"""
+    name = models.CharField(max_length=128)
+    quantity = models.IntegerField()
+    price = models.IntegerField()
+    common_chance = models.IntegerField()
+    rare_chance = models.IntegerField()
+    epic_chance = models.IntegerField()
+    mythic_chance = models.IntegerField()
+    legendary_chance = models.IntegerField()
+
+
+class Chest(models.Model):
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+
+class CharacterChest(Chest):
+    characters = models.ManyToManyField(Character)
+
+
+class ItemChest(Chest):
+    items = models.ManyToManyField(Item)
+
+
+

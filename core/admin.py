@@ -15,8 +15,7 @@ class UserAdmin(BaseUserAdmin):
             _('Permissions'),
             {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_new')}
         ),
-        (_('Important dates'), {'fields': ('last_login',)}),
-	(_('Resources'), {'fields': ('gold', 'experience', 'lvl')})
+        (_('Important dates'), {'fields': ('last_login',)})
     )
     add_fieldsets = (
         (None, {
@@ -31,3 +30,7 @@ admin.site.register(models.Item)
 admin.site.register(models.Character)
 admin.site.register(models.Trait)
 admin.site.register(models.UserResources)
+admin.site.register(models.Store)
+admin.site.register(models.Chest)
+admin.site.register(models.ItemChest)
+admin.site.register(models.CharacterChest)

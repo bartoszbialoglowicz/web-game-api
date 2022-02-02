@@ -1,16 +1,18 @@
-import re
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from core import serializers
-from core.models import Character, Item, UserResources, Trait, Stats
+from core.models import Character, Item, UserResources, Trait, Stats, Store, ItemChest, CharacterChest, Chest
 
 
 
 class BaseResourcesViewSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
-                            mixins.CreateModelMixin):
+                            mixins.CreateModelMixin,
+                            mixins.UpdateModelMixin):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -56,6 +58,13 @@ class UserResourcesViewSet(BaseResourcesViewSet):
         print(self.request.user.userresources)
         queryset = self.queryset.filter(user=self.request.user)
         return queryset
+
+
+class UserResourcesPartialUpdate(viewsets.GenericViewSet,
+                                    mixins.UpdateModelMixin):
+    serializer_class = serializers.UserResourceUpdateSerializer
+    queryset = UserResources.objects.all()
+    lookup_field = 'user'
     
 
 class TraitViewSet(BaseResourcesViewSet):
@@ -66,3 +75,27 @@ class TraitViewSet(BaseResourcesViewSet):
 class StatsViewSet(BaseResourcesViewSet):
     queryset = Stats.objects.all()
     serializer_class = serializers.StatsSerializer
+
+
+class StoreViewSet(BaseResourcesViewSet):
+    queryset = Store.objects.all()
+    serializer_class = serializers.StoreSerializer
+
+
+class ChestViewSet(BaseResourcesViewSet):
+    queryset = Chest.objects.all()
+    serializer_class = serializers.ChestSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(owner=self.request.user)
+        return queryset
+
+
+class ItemChestViewSet(BaseResourcesViewSet):
+    queryset = ItemChest.objects.all()
+    serializer_class = serializers.ItemChestSerializer
+
+
+class CharacterChestViewSet(BaseResourcesViewSet):
+    queryset = CharacterChest.objects.all()
+    serializer_class = serializers.CharacterChestSerializer
