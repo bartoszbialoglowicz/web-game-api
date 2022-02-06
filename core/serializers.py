@@ -44,6 +44,30 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class QuestSerializer(serializers.ModelSerializer):
+
+    item_reward = ItemSerializer(many=True, read_only=True)
+    character_reward = CharacterSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.Quest
+        fields = ('name', 'lvl_required', 'item_reward', 'character_reward', 'gold_reward', 'exp_reward')
+
+
+class AvailableQuestSerializer(serializers.ModelSerializer):
+
+    completed = QuestSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = models.AvailableQuest
+        fields = ('id', 'user', 'completed')
+
+class AvailableQuestUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.AvailableQuest
+        fields = ('completed')
+
 class UserResourceSerializer(WritableNestedModelSerializer,
                                 serializers.ModelSerializer):
 

@@ -1,3 +1,4 @@
+from cgitb import lookup
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -5,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core import serializers
-from core.models import Character, Item, UserResources, Trait, Stats, Store, ItemChest, CharacterChest, Chest
+from core.models import Character, Item, UserResources, Quest, AvailableQuest, Trait, Stats, Store, ItemChest, CharacterChest, Chest
 
 
 
@@ -76,6 +77,30 @@ class StatsViewSet(BaseResourcesViewSet):
     queryset = Stats.objects.all()
     serializer_class = serializers.StatsSerializer
 
+
+class QuestViewSet(BaseResourcesViewSet):
+    queryset = Quest.objects.all()
+    serializer_class = serializers.QuestSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(lvl_required__lte=self.request.user.userresources.lvl)
+        return queryset
+
+class AvailableQuestViewSet(BaseResourcesViewSet):
+    queryset = AvailableQuest.objects.all()
+    serializer_class = serializers.AvailableQuestSerializer
+
+    def get_queryset(self):
+        print(self.request.user.availablequest)
+        queryset = self.queryset.filter(user=self.request.user)
+        return queryset
+
+
+class AvailableQuestUpdateViewSet(viewsets.GenericViewSet,
+                                    mixins.UpdateModelMixin):
+    queryset = AvailableQuest.objects.all()
+    serializer_class = serializers.AvailableQuestUpdateSerializer
+    lookup_field = 'id'
 
 class StoreViewSet(BaseResourcesViewSet):
     queryset = Store.objects.all()

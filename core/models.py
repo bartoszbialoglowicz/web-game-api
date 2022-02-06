@@ -103,6 +103,21 @@ class Item(models.Model):
     base_stats = models.ForeignKey(Stats, on_delete=models.CASCADE, unique=False)
 
 
+class Quest(models.Model):
+    """Quests available for users"""
+    name = models.CharField(max_length=128)
+    item_reward = models.ManyToManyField(Item, blank=True)
+    character_reward = models.ManyToManyField(Character, blank=True)
+    lvl_required = models.IntegerField()
+    gold_reward = models.IntegerField()
+    exp_reward = models.IntegerField()
+
+
+class AvailableQuest(models.Model):
+    user = AutoOneToOneField(get_user_model(), on_delete=models.CASCADE)
+    completed = models.ManyToManyField(Quest)
+
+
 class UserResources(models.Model):
     """Store for all items and characters collected by user"""
     user = AutoOneToOneField(get_user_model(), on_delete=models.CASCADE)
