@@ -123,7 +123,7 @@ class EnemySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Enemy
-        fields = ('name, stats, loot, min_exp', 'max_exp', 'loot_chance')
+        fields = ('id', 'name', 'stats', 'loot', 'min_exp', 'max_exp', 'loot_chance')
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -132,7 +132,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Room
-        fields = ('name', 'enemies')
+        fields = ('id', 'name', 'enemies')
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -141,4 +141,4 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Location
-        fields = ('name', 'rooms')
+        fields = ('id', 'name', 'rooms')
