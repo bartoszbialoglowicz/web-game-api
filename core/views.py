@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core import serializers
-from core.models import Character, Item, UserResources, Quest, AvailableQuest, Trait, Stats, Store, ItemChest, CharacterChest, Chest
+from core.models import Character, Item, Enemy, Room, Location, UserResources, Quest, AvailableQuest, Trait, Stats, Store, ItemChest, CharacterChest, Chest
 
 
 
@@ -124,3 +124,18 @@ class ItemChestViewSet(BaseResourcesViewSet):
 class CharacterChestViewSet(BaseResourcesViewSet):
     queryset = CharacterChest.objects.all()
     serializer_class = serializers.CharacterChestSerializer
+
+
+class EnemyViewSet(BaseResourcesViewSet):
+    queryset = Enemy.objects.all()
+    serializer_class = serializers.EnemySerializer
+
+
+class RoomViewSet(BaseResourcesViewSet):
+    queryset = Room.objects.all()
+    serializer_class = serializers.RoomSerializer
+
+
+class LocationViewSet(BaseResourcesViewSet):
+    queryset = Location.objects.all()
+    serializer_class = serializers.LocationSerializer

@@ -18,6 +18,10 @@ router.register('characterchest', views.CharacterChestViewSet)
 router.register('quests', views.QuestViewSet)
 router.register('availablequests', views.AvailableQuestViewSet)
 router.register('availablequestsupdate', views.AvailableQuestUpdateViewSet)
+router.register('enemies', views.EnemyViewSet)
+router.register('rooms', views.RoomViewSet)
+router.register('locations', views.LocationViewSet)
+
 
 app_name = 'resources'
 

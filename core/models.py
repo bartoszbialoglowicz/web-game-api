@@ -106,11 +106,15 @@ class Item(models.Model):
 class Quest(models.Model):
     """Quests available for users"""
     name = models.CharField(max_length=128)
+    description = models.TextField(blank=True)
     item_reward = models.ManyToManyField(Item, blank=True)
     character_reward = models.ManyToManyField(Character, blank=True)
     lvl_required = models.IntegerField()
     gold_reward = models.IntegerField()
     exp_reward = models.IntegerField()
+
+    def __str__(self) -> str:
+        return self.name + ' (' + str(self.lvl_required) + ")"
 
 
 class AvailableQuest(models.Model):
@@ -154,5 +158,32 @@ class CharacterChest(Chest):
 class ItemChest(Chest):
     items = models.ManyToManyField(Item)
 
+
+class Enemy(models.Model):
+    name = models.CharField(max_length=128)
+    stats = models.ForeignKey(Stats, on_delete=models.CASCADE)
+    loot = models.ManyToManyField(Item, blank=True)
+    min_exp = models.IntegerField()
+    max_exp = models.IntegerField()
+    loot_chance = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class Room(models.Model):
+    name = models.CharField(max_length=128)
+    enemies = models.ManyToManyField(Enemy)
+
+    def __str__(self):
+        return self.name
+
+
+class Location(models.Model):
+    name = models.CharField(max_length=128)
+    rooms = models.ManyToManyField(Room)
+
+    def __str__(self):
+        return self.name
 
 

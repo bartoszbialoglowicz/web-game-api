@@ -1,4 +1,5 @@
 from asyncore import read
+from tkinter.tix import Tree
 from rest_framework import serializers
 
 from core import models
@@ -51,12 +52,10 @@ class QuestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Quest
-        fields = ('name', 'lvl_required', 'item_reward', 'character_reward', 'gold_reward', 'exp_reward')
+        fields = ('id', 'name', 'description', 'lvl_required', 'item_reward', 'character_reward', 'gold_reward', 'exp_reward')
 
 
 class AvailableQuestSerializer(serializers.ModelSerializer):
-
-    completed = QuestSerializer(read_only=True, many=True)
 
     class Meta:
         model = models.AvailableQuest
@@ -115,3 +114,31 @@ class CharacterChestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CharacterChest
         fields = '__all__'
+
+
+class EnemySerializer(serializers.ModelSerializer):
+    
+    stats = StatsSerializer(many=False, read_only=True)
+    loot = ItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.Enemy
+        fields = ('name, stats, loot, min_exp', 'max_exp', 'loot_chance')
+
+
+class RoomSerializer(serializers.ModelSerializer):
+
+    enemies = EnemySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.Room
+        fields = ('name', 'enemies')
+
+
+class LocationSerializer(serializers.ModelSerializer):
+
+    rooms = RoomSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.Location
+        fields = ('name', 'rooms')
